@@ -13,30 +13,36 @@ public class AlertTests {
 
     @Test
     public void alertWithTextboxTest() {
+
         WebDriverManager.chromedriver().setup();
         WebDriver driver = new ChromeDriver();
-        driver.manage().window().maximize();
-
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
 
-        driver.get("https://demo.automationtesting.in/Alerts.html");
+        try {
+            driver.manage().window().maximize();
+            driver.get("https://demo.automationtesting.in/Alerts.html");
 
-        driver.findElement(By.cssSelector("a[href='#Textbox']")).click();
+            /* ---------- Navigate to Alert with Textbox ---------- */
+            driver.findElement(By.cssSelector("a[href='#Textbox']")).click();
+            driver.findElement(By.cssSelector("button.btn.btn-info")).click();
 
-        driver.findElement(By.cssSelector("button.btn.btn-info")).click();
+            /* ---------- Handle Alert ---------- */
+            Alert alert = wait.until(ExpectedConditions.alertIsPresent());
+            String name = "Vako Kobulashvili";
 
-        Alert alert = wait.until(ExpectedConditions.alertIsPresent());
+            alert.sendKeys(name);
+            alert.accept();
 
-        String name = "Vako Kobulashvili";
+            /* ---------- Validation ---------- */
+            WebElement result = wait.until(
+                    ExpectedConditions.visibilityOfElementLocated(By.id("demo1"))
+            );
 
-        alert.sendKeys(name);
-        alert.accept();
+            Assert.assertTrue(result.getText().contains(name),
+                    "Result text does not contain entered name!");
 
-        WebElement result = driver.findElement(By.id("demo1"));
-        String resultText = result.getText();
-
-        Assert.assertTrue(resultText.contains(name));
-
-        driver.quit();
+        } finally {
+            driver.quit();
+        }
     }
 }
